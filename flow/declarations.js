@@ -32,14 +32,14 @@ type PositionResult = Position | { selector: string, offset?: Position } | void;
 
 declare type RouterOptions = {
   routes?: Array<RouteConfig>;
-  mode?: string;
-  fallback?: boolean;
-  base?: string;
-  linkActiveClass?: string;
-  linkExactActiveClass?: string;
-  parseQuery?: (query: string) => Object;
+  mode?: string; // 'hash' 'history' 'abstract'
+  fallback?: boolean; // 降级处理 (history -> hash) to support IE9
+  base?: string; // default: '/'
+  linkActiveClass?: string; // <router-link> default active class
+  linkExactActiveClass?: string; // <router-link> default active class for exact matches
+  parseQuery?: (query: string) => Object; // custom query string parse / stringify functions. Overrides the default.
   stringifyQuery?: (query: Object) => string;
-  scrollBehavior?: (
+  scrollBehavior?: ( // only works if the browser supports history.pushState
     to: Route,
     from: Route,
     savedPosition: ?Position

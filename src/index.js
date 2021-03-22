@@ -19,11 +19,11 @@ import type { Matcher } from './create-matcher'
 import { isNavigationFailure, NavigationFailureType } from './util/errors'
 
 export default class VueRouter {
-  static install: () => void
-  static version: string
+  static install: () => void // register vue router plugin
+  static version: string //
   static isNavigationFailure: Function
-  static NavigationFailureType: any
-  static START_LOCATION: Route
+  static NavigationFailureType: any // is a object {redirected: 2, ...}
+  static START_LOCATION: Route // ?: guess: 初始地址
 
   app: any
   apps: Array<any>
@@ -39,17 +39,18 @@ export default class VueRouter {
   afterHooks: Array<?AfterNavigationHook>
 
   constructor (options: RouterOptions = {}) {
-    this.app = null
-    this.apps = []
-    this.options = options
-    this.beforeHooks = []
-    this.resolveHooks = []
+    this.app = null // root Vue instance the router was injected into
+    this.apps = []  //
+    this.options = options // RouterOptions
+    this.beforeHooks = []  //
+    this.resolveHooks = [] //
     this.afterHooks = []
     this.matcher = createMatcher(options.routes || [], this)
 
-    let mode = options.mode || 'hash'
+    /** configure mode **/
+    let mode = options.mode || 'hash' // the mode the router is using default: 'hash'
     this.fallback =
-      mode === 'history' && !supportsPushState && options.fallback !== false
+      mode === 'history' && !supportsPushState && options.fallback !== false // if developer don't configure fallback to false, defalut true
     if (this.fallback) {
       mode = 'hash'
     }
@@ -58,6 +59,7 @@ export default class VueRouter {
     }
     this.mode = mode
 
+    /** different mode, different history **/
     switch (mode) {
       case 'history':
         this.history = new HTML5History(this, options.base)
@@ -284,7 +286,7 @@ VueRouter.install = install
 VueRouter.version = '__VERSION__'
 VueRouter.isNavigationFailure = isNavigationFailure
 VueRouter.NavigationFailureType = NavigationFailureType
-VueRouter.START_LOCATION = START
+VueRouter.START_LOCATION = START // createRoute(null, {path: '/'}) => { path : '/' }
 
 /** 浏览器环境安装 **/
 if (inBrowser && window.Vue) {
