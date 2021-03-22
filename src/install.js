@@ -3,14 +3,17 @@ import Link from './components/link'
 
 export let _Vue
 
+/** Vue plugin 实现 obj.install = fn(){} **/
 export function install (Vue) {
   if (install.installed && _Vue === Vue) return
   install.installed = true
 
   _Vue = Vue
 
+  /** 判断一个变量是否被定义 **/
   const isDef = v => v !== undefined
 
+  /** TODO: to read registerInstance  **/
   const registerInstance = (vm, callVal) => {
     let i = vm.$options._parentVnode
     if (isDef(i) && isDef(i = i.data) && isDef(i = i.registerRouteInstance)) {
@@ -18,6 +21,7 @@ export function install (Vue) {
     }
   }
 
+  /** TODO: to read Vue.mixin **/
   Vue.mixin({
     beforeCreate () {
       if (isDef(this.$options.router)) {
@@ -35,6 +39,7 @@ export function install (Vue) {
     }
   })
 
+  /** 为 Vue.prototype 添加 $router 和 $route 属性 **/
   Object.defineProperty(Vue.prototype, '$router', {
     get () { return this._routerRoot._router }
   })
@@ -43,9 +48,11 @@ export function install (Vue) {
     get () { return this._routerRoot._route }
   })
 
+  /** 注册组件 **/
   Vue.component('RouterView', View)
   Vue.component('RouterLink', Link)
 
+  /** 设置 beforeRouterEnter 等自定义生命周期 Mixin 合并策略等于created,  merged into a array**/
   const strats = Vue.config.optionMergeStrategies
   // use the same hook merging strategy for route hooks
   strats.beforeRouteEnter = strats.beforeRouteLeave = strats.beforeRouteUpdate = strats.created
