@@ -189,6 +189,7 @@ export function createMatcher (
     return createRoute(record, location, redirectedFrom, router)
   }
 
+  /** use revealing pattern **/
   return {
     match,
     addRoute,

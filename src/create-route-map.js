@@ -5,7 +5,7 @@ import { cleanPath } from './util/path'
 import { assert, warn } from './util/warn'
 
 export function createRouteMap (
-  routes: Array<RouteConfig>,
+  routes: Array<RouteConfig>, // 1st: only read this parameter
   oldPathList?: Array<string>,
   oldPathMap?: Dictionary<RouteRecord>,
   oldNameMap?: Dictionary<RouteRecord>,
@@ -63,6 +63,7 @@ function addRouteRecord (
   matchAs?: string
 ) {
   const { path, name } = route
+  /** 处理 route 配置**/
   if (process.env.NODE_ENV !== 'production') {
     assert(path != null, `"path" is required in a route configuration.`)
     assert(
@@ -71,7 +72,7 @@ function addRouteRecord (
         path || name
       )} cannot be a ` + `string id. Use an actual component instead.`
     )
-
+    /**  255 ascii characters **/
     warn(
       // eslint-disable-next-line no-control-regex
       !/[^\u0000-\u007F]+/.test(path),
@@ -82,7 +83,7 @@ function addRouteRecord (
   }
 
   const pathToRegexpOptions: PathToRegexpOptions =
-    route.pathToRegexpOptions || {}
+    route.pathToRegexpOptions || {} // path-to-regexp options for compiling regex, if route has no,default {}
   const normalizedPath = normalizePath(path, parent, pathToRegexpOptions.strict)
 
   if (typeof route.caseSensitive === 'boolean') {
@@ -208,12 +209,13 @@ function compileRouteRegex (
   return regex
 }
 
+/** FIXME: give a intuitive description **/
 function normalizePath (
   path: string,
   parent?: RouteRecord,
   strict?: boolean
 ): string {
-  if (!strict) path = path.replace(/\/$/, '')
+  if (!strict) path = path.replace(/\/$/, '') /** FIXME: $ means? **/
   if (path[0] === '/') return path
   if (parent == null) return path
   return cleanPath(`${parent.path}/${path}`)
