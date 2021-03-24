@@ -21,14 +21,13 @@ export function install (Vue) {
     }
   }
 
-  /** TODO: to read Vue.mixin **/
   Vue.mixin({
     beforeCreate () {
       if (isDef(this.$options.router)) {
-        this._routerRoot = this
+        this._routerRoot = this // FIXME：vue根实例 -> 自身， 组件实例 -> 最近的父组件？
         this._router = this.$options.router
         this._router.init(this)
-        Vue.util.defineReactive(this, '_route', this._router.history.current)
+        Vue.util.defineReactive(this, '_route', this._router.history.current) //  this._route 变成响应式对象
       } else {
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this
       }

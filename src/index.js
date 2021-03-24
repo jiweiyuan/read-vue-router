@@ -40,12 +40,12 @@ export default class VueRouter {
 
   constructor (options: RouterOptions = {}) {
     this.app = null // root Vue instance the router was injected into
-    this.apps = []  //
+    this.apps = []  // 保存持有 $options.router 属性的 Vue 实例
     this.options = options // RouterOptions
     this.beforeHooks = []  //
     this.resolveHooks = [] //
     this.afterHooks = []
-    this.matcher = createMatcher(options.routes || [], this)
+    this.matcher = createMatcher(options.routes || [], this) // 路由匹配器
 
     /** configure mode **/
     let mode = options.mode || 'hash' // the mode the router is using default: 'hash'
@@ -85,6 +85,7 @@ export default class VueRouter {
     return this.history && this.history.current
   }
 
+  /** init 的逻辑很简单，它传入的参数是 Vue 实例，然后存储到 this.apps 中；只有根 Vue 实例会保存到 this.app 中， **/
   init (app: any /* Vue component instance */) {
     process.env.NODE_ENV !== 'production' &&
       assert(
@@ -139,6 +140,7 @@ export default class VueRouter {
       )
     }
 
+    // FIXME： what's function?
     history.listen(route => {
       this.apps.forEach(app => {
         app._route = route
