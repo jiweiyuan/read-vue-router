@@ -16,12 +16,14 @@ export type Matcher = {
   getRoutes: () => Array<RouteRecord>;
 };
 
+/** create Vue Router matcher **/
 export function createMatcher (
-  routes: Array<RouteConfig>,
-  router: VueRouter
+  routes: Array<RouteConfig>, // user customize routes config
+  router: VueRouter // VueRouter instance
 ): Matcher {
   const { pathList, pathMap, nameMap } = createRouteMap(routes)
 
+  // addRoutes 方法的作用是动态添加路由配置，因为在实际开发中有些场景是不能提前把路由写死的，需要根据一些条件动态添加路由，所以 Vue-Router 也提供了这一接口
   function addRoutes (routes) {
     createRouteMap(routes, pathList, pathMap, nameMap)
   }
@@ -47,11 +49,11 @@ export function createMatcher (
   function getRoutes () {
     return pathList.map(path => pathMap[path])
   }
-
+  /** match 方法返回的是一个路径，它的作用是根据传入的 raw 和当前的路径 currentRoute 计算出一个新的路径并返回。目的找到匹配的路径 Route **/
   function match (
-    raw: RawLocation,
-    currentRoute?: Route,
-    redirectedFrom?: Location
+    raw: RawLocation, // string | Location
+    currentRoute?: Route, // 当前的路径
+    redirectedFrom?: Location // 和重定向有关
   ): Route {
     const location = normalizeLocation(raw, currentRoute, false, router)
     const { name } = location

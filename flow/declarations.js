@@ -17,7 +17,7 @@ declare module 'path-to-regexp' {
   }
 }
 
-declare type Dictionary<T> = { [key: string]: T }
+declare type Dictionary<T> = { [key: string]: T } // 对象实现字典数据结构
 
 declare type NavigationGuard = (
   to: Route,

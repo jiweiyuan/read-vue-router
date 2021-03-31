@@ -4,6 +4,12 @@ import Regexp from 'path-to-regexp'
 import { cleanPath } from './util/path'
 import { assert, warn } from './util/warn'
 
+/** createRouteMap 的目的是把用户的路由配置转化为一张路由映射表，包含 pathList, pathMap, nameMap
+ * pathList 存储所有的 path
+ * pathMap 表示一个 path 到 RouteRecord 的映射关系
+ * nameMap 表示 name 到 RouteRecord 的映射关系
+ * 遍历 routes 为每一个 route 执行 addRouteRecord 方法生成一条记录
+ */
 export function createRouteMap (
   routes: Array<RouteConfig>, // 1st: only read this parameter
   oldPathList?: Array<string>,
@@ -26,7 +32,7 @@ export function createRouteMap (
     addRouteRecord(pathList, pathMap, nameMap, route, parentRoute)
   })
 
-  // ensure wildcard routes are always at the end
+  // ensure wildcard(*) routes are always at the end
   for (let i = 0, l = pathList.length; i < l; i++) {
     if (pathList[i] === '*') {
       pathList.push(pathList.splice(i, 1)[0])
@@ -63,7 +69,7 @@ function addRouteRecord (
   matchAs?: string
 ) {
   const { path, name } = route
-  /** 处理 route 配置**/
+  /** 如果阅读源码经验不够丰富， process.env.NODE_ENV 相关的代码可以不用看 **/
   if (process.env.NODE_ENV !== 'production') {
     assert(path != null, `"path" is required in a route configuration.`)
     assert(
@@ -92,7 +98,7 @@ function addRouteRecord (
 
   const record: RouteRecord = {
     path: normalizedPath,
-    regex: compileRouteRegex(normalizedPath, pathToRegexpOptions),
+    regex: compileRouteRegex(normalizedPath, pathToRegexpOptions), // 路径的正侧匹配表达式
     components: route.components || { default: route.component },
     alias: route.alias
       ? typeof route.alias === 'string'
@@ -102,7 +108,7 @@ function addRouteRecord (
     instances: {},
     enteredCbs: {},
     name,
-    parent,
+    parent, // 父的 RouteRecord
     matchAs,
     redirect: route.redirect,
     beforeEnter: route.beforeEnter,
@@ -149,7 +155,7 @@ function addRouteRecord (
     pathList.push(record.path)
     pathMap[record.path] = record
   }
-
+  /** 对别名路由的处理 {path: 'a', alias: 'b'} **/
   if (route.alias !== undefined) {
     const aliases = Array.isArray(route.alias) ? route.alias : [route.alias]
     for (let i = 0; i < aliases.length; ++i) {
@@ -191,6 +197,7 @@ function addRouteRecord (
   }
 }
 
+/** Turn a path string such as /user/:name into a regular expression. 利用了path-to-regexp 这个工具库，把 path 解析成一个正则表达式的扩 */
 function compileRouteRegex (
   path: string,
   pathToRegexpOptions: PathToRegexpOptions
@@ -209,7 +216,7 @@ function compileRouteRegex (
   return regex
 }
 
-/** FIXME: give a intuitive description **/
+/** 当前的路径和 父节点的路径 {path: 'book', children: [{path: 'add' }]}  ==> 'book/path' **/
 function normalizePath (
   path: string,
   parent?: RouteRecord,
