@@ -1,5 +1,7 @@
 /* @flow */
-
+/**
+ * 一个再复杂的组件， 都是由三部分组成的， prop event slot 这是 vue.js 组件的 api(this is very important !!!)
+ * **/
 import { createRoute, isSameRoute, isIncludedRoute } from '../util/route'
 import { extend } from '../util/misc'
 import { normalizeLocation } from '../util/location'
@@ -19,18 +21,18 @@ export default {
   name: 'RouterLink',
   props: {
     to: {
-      type: toTypes,
+      type: toTypes, // string | Location 表示目标路由的链接， 当被点击后，内部会立刻把 to 的值传到 router.push()
       required: true
     },
     tag: {
       type: String,
-      default: 'a'
+      default: 'a' // 让 router-link  渲染成为 某种标签，<router-link to="/foo" tag="li">foo</router-link> ==> <li>foo</li>
     },
     custom: Boolean,
     exact: Boolean,
     exactPath: Boolean,
-    append: Boolean,
-    replace: Boolean,
+    append: Boolean, // 设置 append 属性后，则在当前（相对路径） 前添加基路径例如，我们从 /a 导航到一个相对路径 b，如果没有配置 append，则路径为 /b，如果配了，则为 /a/b
+    replace: Boolean, // history replace() not push()
     activeClass: String,
     exactActiveClass: String,
     ariaCurrentValue: {
@@ -51,6 +53,7 @@ export default {
       this.append
     )
 
+    /** 对于样式激活的 **/
     const classes = {}
     const globalActiveClass = router.options.linkActiveClass
     const globalExactActiveClass = router.options.linkExactActiveClass
